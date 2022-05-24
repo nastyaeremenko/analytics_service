@@ -1,0 +1,61 @@
+@startuml
+skinparam componentStyle uml2
+actor Client as client
+actor Employee as employer
+
+package "Movies Service" as movies{
+    package "Admin Panel" as admin{
+        component Nginx as adminNginx
+        component Api as adminApi
+        database "Movies Database" as moviesdb
+    }
+    package "Auth Service" as auth{
+        component Nginx as authNginx
+        component "Auth Api" as authApi
+        database "Auth Database" as authdb
+        database "Auth Cache" as authCache
+    }
+    package "Search Service" as search{
+        component Nginx as searchNginx
+        component SearchApi as searchApi
+        database ElasticSearch
+        component ETL as searchETL
+    }
+    package "Analytic Service"{
+        component Nginx as analyticNginx
+        component "Analytic Api" as analyticApi
+        component Kafka
+        component ClickHouse
+        component ETL as analyticETL
+    }
+}
+
+actor Analytic as analytic
+
+authApi -- authdb
+authApi -- authCache
+adminApi -- moviesdb
+searchApi -- ElasticSearch
+
+moviesdb -> searchETL
+searchETL -> ElasticSearch
+analyticApi -> Kafka
+Kafka -> analyticETL
+analyticETL -> ClickHouse
+
+client <--> searchNginx : User Request
+client <-> authNginx : Authorization
+client ---> analyticNginx
+employer <--> adminNginx : DB Administration
+analytic <-up-> ClickHouse
+
+analyticNginx <--> analyticApi
+adminNginx <--> adminApi
+searchNginx <--> searchApi
+authNginx <--> authApi
+
+searchApi <-> authApi : Authentication
+
+
+
+@enduml

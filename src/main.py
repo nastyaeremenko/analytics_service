@@ -9,7 +9,9 @@ from kafka import KafkaProducer
 from api import movie_progress
 from core import config
 from core.logger import LOGGING
-from domain import kafka
+from data import kafka
+from domain.grpc_auth import client
+from domain.grpc_auth.protos import auth_pb2_grpc
 
 app = FastAPI(
     title=config.PROJECT_NAME,
@@ -24,6 +26,12 @@ async def startup():
     kafka.producer = KafkaProducer(bootstrap_servers=f'{config.KAFKA_HOST}:{config.KAFKA_PORT}',
                                    value_serializer=lambda v: json.dumps(v).encode('utf-8'),
                                    key_serializer=str.encode)
+    client.stub = auth_pb2_grpc.AuthStub(client.channel)
+
+
+@app.on_event('shutdown')
+async def shutdown():
+    await client.channel.close()
 
 
 app.include_router(movie_progress.router,

@@ -13,6 +13,5 @@ class BaseOrjsonModel(BaseModel):
 
 
 class MovieProgress(BaseOrjsonModel):
-    user_id: str
     movie_id: str
     movie_second: int

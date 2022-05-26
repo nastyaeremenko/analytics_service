@@ -2,7 +2,7 @@
 """Client and server classes corresponding to protobuf-defined services."""
 import grpc
 
-from src.domain.grpc_auth.protos import \
+from domain.grpc_auth.protos import \
     auth_pb2 as src_dot_domain_dot_grpc__auth_dot_protos_dot_auth__pb2
 
 

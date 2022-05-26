@@ -8,6 +8,15 @@
 1) Создать docker контейнеры `docker-compose build`
 2) Запуск `docker-compose up`
 
+## Kafka
+1) Создание Kafka Topic после запуска docker compose
+  `docker-compose exec kafka /opt/bitnami/kafka/bin/kafka-topics.sh \
+  --create \
+  --bootstrap-server localhost:9092 \
+  --replication-factor 1 \
+  --partitions 1 \
+  --topic movie_progress`
+
 ## Линтер
 
 Конфигурация для flake8 находится в `setup.cfg`

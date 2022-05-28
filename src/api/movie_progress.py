@@ -13,9 +13,14 @@ router = APIRouter()
 
 @router.post('', status_code=HTTPStatus.OK)
 async def post_movie_progress(payload: MovieProgress,
-                              user_id=Depends(get_user_id),
+                              user_uuid=Depends(get_user_id),
                               kafka_producer: KafkaProducer = Depends(get_kafka_producer)):
+
     kafka_producer.send(topic=KAFKA_TOPIC,
-                        value=payload.movie_second,
-                        key=f'{user_id}+{payload.movie_id}')
+                        value={'movie_second': payload.movie_second,
+                               'genre_uuid': str(payload.genre_uuid),
+                               'movie_length': payload.movie_length,
+                               'current_date': payload.current_date.isoformat()},
+                        key=f'{user_uuid}+{payload.movie_uuid}')
+
     return {'message': 'Uploaded successfully'}

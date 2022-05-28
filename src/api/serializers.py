@@ -1,3 +1,6 @@
+from datetime import datetime
+from uuid import UUID
+
 import orjson
 from pydantic import BaseModel
 
@@ -13,5 +16,8 @@ class BaseOrjsonModel(BaseModel):
 
 
 class MovieProgress(BaseOrjsonModel):
-    movie_id: str
+    movie_uuid: UUID
+    genre_uuid: UUID
     movie_second: int
+    movie_length: int
+    current_date: datetime

@@ -17,7 +17,6 @@ class BaseOrjsonModel(BaseModel):
 
 class MovieProgress(BaseOrjsonModel):
     movie_uuid: UUID
-    genre_uuid: UUID
     movie_second: int
     movie_length: int
     current_date: datetime

@@ -18,7 +18,6 @@ async def post_movie_progress(payload: MovieProgress,
 
     kafka_producer.send(topic=KAFKA_TOPIC,
                         value={'movie_second': payload.movie_second,
-                               'genre_uuid': str(payload.genre_uuid),
                                'movie_length': payload.movie_length,
                                'current_date': payload.current_date.isoformat()},
                         key=f'{user_uuid}+{payload.movie_uuid}')

@@ -12,3 +12,7 @@ KAFKA_PORT = os.getenv('KAFKA_PORT', 9092)
 # Kafka consume timeout in ms
 CONSUME_TIMEOUT = 60 * 100
 CONSUME_MAX_POLL = 10_000
+
+#ClickHouse
+CH_HOST = os.getenv('CH_HOST', 'localhost')
+CH_TABLE_NAME = os.getenv('CH_TABLE_NAME', 'movie_view')

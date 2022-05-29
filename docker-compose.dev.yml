@@ -1,4 +1,5 @@
-version: "3"
+version: '3'
+
 services:
   zookeeper:
     image: zookeeper:3.5
@@ -59,7 +60,7 @@ services:
       - KAFKA_CFG_ZOOKEEPER_CONNECT=zookeeper:2181
       - ALLOW_PLAINTEXT_LISTENER=yes
     volumes:
-      - "kafka_data:/bitnami"
+      - 'kafka_data:/bitnami'
     depends_on:
       - zookeeper
 

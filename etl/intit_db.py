@@ -59,4 +59,4 @@ def init_node(client: Client, shard1: str, shard2: str):
 
 
 if __name__ == '__main__':
-    connection()
+    create_db()

@@ -21,42 +21,44 @@ def init_node(client: Client, shard1: str, shard2: str):
     client.execute("CREATE DATABASE IF NOT EXISTS analysis;")
     client.execute("CREATE DATABASE IF NOT EXISTS shard;")
     client.execute("CREATE DATABASE IF NOT EXISTS replica;")
+    path1 = f'/clickhouse/tables/{shard1}/{CH_TABLE_NAME}'
     client.execute(
         f"""
         CREATE TABLE IF NOT EXISTS shard.{CH_TABLE_NAME} (
-            user_uuid String, 
-            movie_uuid String, 
-            movie_progress UInt64, 
-            movie_length UInt64, 
+            user_uuid String,
+            movie_uuid String,
+            movie_progress UInt64,
+            movie_length UInt64,
             event_time DateTime
-        ) Engine=ReplicatedMergeTree('/clickhouse/tables/{shard1}/{CH_TABLE_NAME}', 'replica_1') 
+        ) Engine=ReplicatedMergeTree({path1}, 'replica_1')
         PARTITION BY toYYYYMMDD(event_time) ORDER BY movie_uuid;
         """
     )
+    path2 = f'/clickhouse/tables/{shard2}/{CH_TABLE_NAME}'
     client.execute(
         f"""
             CREATE TABLE IF NOT EXISTS replica.{CH_TABLE_NAME} (
-                user_uuid String, 
-                movie_uuid String, 
-                movie_progress UInt64, 
-                movie_length UInt64, 
+                user_uuid String,
+                movie_uuid String,
+                movie_progress UInt64,
+                movie_length UInt64,
                 event_time DateTime
-            ) Engine=ReplicatedMergeTree('/clickhouse/tables/{shard2}/{CH_TABLE_NAME}', 'replica_2') 
+            ) Engine=ReplicatedMergeTree({path2}, 'replica_2')
             PARTITION BY toYYYYMMDD(event_time) ORDER BY movie_uuid;
             """
     )
     client.execute(
         f"""
         CREATE TABLE IF NOT EXISTS analytics.{CH_TABLE_NAME} (
-            user_uuid String, 
-            movie_uuid String, 
-            movie_progress UInt64, 
-            movie_length UInt64, 
+            user_uuid String,
+            movie_uuid String,
+            movie_progress UInt64,
+            movie_length UInt64,
             event_time DateTime
         ) ENGINE = Distributed('company_cluster', '', {CH_TABLE_NAME}, rand());
         """
     )
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     create_db()

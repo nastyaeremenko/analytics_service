@@ -6,7 +6,13 @@ from kafka import KafkaConsumer
 from constants import (CONSUME_MAX_POLL, CONSUME_TIMEOUT, KAFKA_GROUP_ID,
                        KAFKA_HOST, KAFKA_PORT, KAFKA_TOPIC, CH_HOST,
                        CH_TABLE_NAME)
+from intit_db import create_db
 from model import MovieModel
+
+
+def connect_to_db():
+    create_db()
+    return Client(host=CH_HOST)
 
 
 def transform_records(records: list):
@@ -44,5 +50,5 @@ if __name__ == '__main__':
                              bootstrap_servers=[f'{KAFKA_HOST}:{KAFKA_PORT}'],
                              max_poll_records=CONSUME_MAX_POLL,
                              value_deserializer=lambda m: json.loads(m.decode('utf-8')))
-    client = Client(host=CH_HOST)
+    client = connect_to_db()
     main(consumer, client)

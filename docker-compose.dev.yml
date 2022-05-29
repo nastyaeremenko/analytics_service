@@ -64,6 +64,25 @@ services:
     depends_on:
       - zookeeper
 
+  etl_analytics:
+    build:
+      context: .
+      dockerfile: etl/Dockerfile
+    container_name: etl_analytics
+    working_dir: /etl/
+    volumes:
+      - ./etl:/etl/
+    env_file:
+      - .env
+    depends_on:
+      - zookeeper
+      - clickhouse-node1
+      - clickhouse-node2
+      - clickhouse-node3
+      - clickhouse-node4
+      - kafka
+    command: python run.py
+
 volumes:
   zookeeper_data:
     driver: local

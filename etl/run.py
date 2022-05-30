@@ -54,6 +54,7 @@ def main(kafka_consumer: KafkaConsumer, ch_client: Client):
 if __name__ == '__main__':
     consumer = KafkaConsumer(
         KAFKA_TOPIC,
+        api_version=(0, 11, 5),
         group_id=KAFKA_GROUP_ID,
         bootstrap_servers=[f'{KAFKA_HOST}:{KAFKA_PORT}'],
         max_poll_records=CONSUME_MAX_POLL,

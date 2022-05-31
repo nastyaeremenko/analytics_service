@@ -1,13 +1,54 @@
-version: "3"
+version: '3'
+
 services:
   zookeeper:
-    image: 'bitnami/zookeeper:latest'
+    image: zookeeper:3.5
     ports:
       - '2181:2181'
     environment:
       - ALLOW_ANONYMOUS_LOGIN=yes
     volumes:
-      - "zookeeper_data:/bitnami"
+      - zookeeper_data:/data
+
+  clickhouse-node1:
+    image: yandex/clickhouse-server:20.4
+    container_name: clickhouse-node1
+    hostname: clickhouse-node1
+    ports:
+      - '8123:8123'
+      - '9000:9000'
+    volumes:
+      - ./data/node1:/etc/clickhouse-server
+    depends_on:
+      - zookeeper
+
+  clickhouse-node2:
+    image: yandex/clickhouse-server:20.4
+    container_name: clickhouse-node2
+    hostname: clickhouse-node2
+    volumes:
+      - ./data/node2:/etc/clickhouse-server
+    depends_on:
+      - zookeeper
+
+  clickhouse-node3:
+    image: yandex/clickhouse-server:20.4
+    container_name: clickhouse-node3
+    hostname: clickhouse-node3
+    volumes:
+      - ./data/node3:/etc/clickhouse-server
+    depends_on:
+      - zookeeper
+
+  clickhouse-node4:
+    image: yandex/clickhouse-server:20.4
+    container_name: clickhouse-node4
+    hostname: clickhouse-node4
+    volumes:
+      - ./data/node4:/etc/clickhouse-server
+    depends_on:
+      - zookeeper
+
   kafka:
     image: 'bitnami/kafka:latest'
     ports:
@@ -19,9 +60,10 @@ services:
       - KAFKA_CFG_ZOOKEEPER_CONNECT=zookeeper:2181
       - ALLOW_PLAINTEXT_LISTENER=yes
     volumes:
-      - "kafka_data:/bitnami"
+      - 'kafka_data:/bitnami'
     depends_on:
       - zookeeper
+
   web:
     build: .
     container_name: ugc-api
@@ -37,12 +79,32 @@ services:
       - WAIT_HOST_CONNECT_TIMEOUT=30
     depends_on:
       - kafka
+
   nginx:
     build: ./nginx
     ports:
       - '8000:80'
     depends_on:
       - web
+
+  etl_analytics:
+    build:
+      context: .
+      dockerfile: etl/Dockerfile
+    container_name: etl_analytics
+    working_dir: /etl/
+    volumes:
+      - ./etl:/etl/
+    env_file:
+      - .env.prod
+    depends_on:
+      - zookeeper
+      - clickhouse-node1
+      - clickhouse-node2
+      - clickhouse-node3
+      - clickhouse-node4
+      - kafka
+    command: python run.py
 
 volumes:
   zookeeper_data:

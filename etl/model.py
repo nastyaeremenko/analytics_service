@@ -1,3 +1,4 @@
+from datetime import datetime
 from dataclasses import dataclass
 
 
@@ -5,6 +6,6 @@ from dataclasses import dataclass
 class MovieModel:
     user_uuid: str
     movie_uuid: str
-    movie_second: int
+    movie_progress: int
     movie_length: int
-    current_date: str
+    event_time: datetime

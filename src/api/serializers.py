@@ -1,4 +1,3 @@
-from datetime import datetime
 from uuid import UUID
 
 import orjson
@@ -17,6 +16,5 @@ class BaseOrjsonModel(BaseModel):
 
 class MovieProgress(BaseOrjsonModel):
     movie_uuid: UUID
-    movie_second: int
+    movie_progress: int
     movie_length: int
-    current_date: datetime

@@ -15,6 +15,18 @@ from constants import (
 )
 from intit_db import create_db
 from model import MovieModel
+from logging import getLogger
+
+
+def get_consumer():
+    return KafkaConsumer(
+        KAFKA_TOPIC,
+        api_version=(0, 11, 5),
+        group_id=KAFKA_GROUP_ID,
+        bootstrap_servers=[f'{KAFKA_HOST}:{KAFKA_PORT}'],
+        max_poll_records=CONSUME_MAX_POLL,
+        value_deserializer=lambda m: json.loads(m.decode('utf-8')),
+    )
 
 
 def connect_to_db():
@@ -39,26 +51,23 @@ def load_data_to_db(client: Client, values: list):
         return False
 
 
-def main(kafka_consumer: KafkaConsumer, ch_client: Client):
+def main():
+    logger = getLogger('main')
+    ch_client: Client = connect_to_db()
+    kafka_consumer = get_consumer()
     values = []
-    while True:
-        msg_poll = kafka_consumer.poll(timeout_ms=CONSUME_TIMEOUT).values()
-        for records in msg_poll:
-            transformed_records = [record for record in transform_records(records)]
-            values.append(transformed_records)
+    msg_poll = kafka_consumer.poll(timeout_ms=CONSUME_TIMEOUT).values()
+    for records in msg_poll:
+        transformed_records = [record for record in transform_records(records)]
+        values.append(transformed_records)
+        for _retry in range(3):
             result = load_data_to_db(ch_client, values)
             if result:
                 values = []
+                break
+        else:
+            logger.exception('Error to upload data to ClickHouse')
 
 
 if __name__ == '__main__':
-    consumer = KafkaConsumer(
-        KAFKA_TOPIC,
-        api_version=(0, 11, 5),
-        group_id=KAFKA_GROUP_ID,
-        bootstrap_servers=[f'{KAFKA_HOST}:{KAFKA_PORT}'],
-        max_poll_records=CONSUME_MAX_POLL,
-        value_deserializer=lambda m: json.loads(m.decode('utf-8')),
-    )
-    client = connect_to_db()
-    main(consumer, client)
+    main()

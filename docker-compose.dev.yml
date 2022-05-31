@@ -81,7 +81,7 @@ services:
       - clickhouse-node3
       - clickhouse-node4
       - kafka
-    command: python run.py
+    command: python scheduler.py
 
 volumes:
   zookeeper_data:

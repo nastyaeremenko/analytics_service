@@ -1,8 +1,13 @@
 import json
+import logging
+from dataclasses import asdict
+from datetime import datetime
+from logging import config
 
 from clickhouse_driver import Client
 from kafka import KafkaConsumer
 
+from backoff import backoff
 from constants import (
     CONSUME_MAX_POLL,
     CONSUME_TIMEOUT,
@@ -14,9 +19,13 @@ from constants import (
     CH_TABLE_NAME,
 )
 from intit_db import create_db
+from logger import LOG_CONFIG
 from model import MovieModel
 
+config.dictConfig(LOG_CONFIG)
 
+
+@backoff(logging=logging)
 def connect_to_db():
     create_db()
     return Client(host=CH_HOST)
@@ -25,30 +34,27 @@ def connect_to_db():
 def transform_records(records: list):
     for record in records:
         user_uuid, movie_uuid = record.key.decode().split('+')
+        event_time = record.value.pop('event_time')
+        event_time = datetime.fromisoformat(event_time)
         movie_model = MovieModel(
-            user_uuid=user_uuid, movie_uuid=movie_uuid, **record.value
+            user_uuid=user_uuid, movie_uuid=movie_uuid,
+            event_time=event_time, **record.value
         )
-        yield movie_model
+        yield asdict(movie_model)
 
 
+@backoff(logging=logging)
 def load_data_to_db(client: Client, values: list):
-    try:
-        client.execute(f'INSERT INTO {CH_TABLE_NAME} VALUES', values)
-        return True
-    except Exception:
-        return False
+    client.execute(f'INSERT INTO analytics.{CH_TABLE_NAME} VALUES', values)
 
 
 def main(kafka_consumer: KafkaConsumer, ch_client: Client):
-    values = []
     while True:
         msg_poll = kafka_consumer.poll(timeout_ms=CONSUME_TIMEOUT).values()
         for records in msg_poll:
             transformed_records = [record for record in transform_records(records)]
-            values.append(transformed_records)
-            result = load_data_to_db(ch_client, values)
-            if result:
-                values = []
+            load_data_to_db(ch_client, transformed_records)
+            kafka_consumer.commit()
 
 
 if __name__ == '__main__':
@@ -59,6 +65,7 @@ if __name__ == '__main__':
         bootstrap_servers=[f'{KAFKA_HOST}:{KAFKA_PORT}'],
         max_poll_records=CONSUME_MAX_POLL,
         value_deserializer=lambda m: json.loads(m.decode('utf-8')),
+        enable_auto_commit=False
     )
     client = connect_to_db()
     main(consumer, client)

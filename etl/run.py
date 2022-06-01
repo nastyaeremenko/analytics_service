@@ -4,21 +4,13 @@ from dataclasses import asdict
 from datetime import datetime
 from logging import config
 
-from clickhouse_driver import Client
-from kafka import KafkaConsumer
-
 from backoff import backoff
-from constants import (
-    CONSUME_MAX_POLL,
-    CONSUME_TIMEOUT,
-    KAFKA_GROUP_ID,
-    KAFKA_HOST,
-    KAFKA_PORT,
-    KAFKA_TOPIC,
-    CH_HOST,
-    CH_TABLE_NAME,
-)
+from clickhouse_driver import Client
+from constants import (CH_HOST, CH_TABLE_NAME, CONSUME_MAX_POLL,
+                       CONSUME_TIMEOUT, KAFKA_GROUP_ID, KAFKA_HOST, KAFKA_PORT,
+                       KAFKA_TOPIC)
 from intit_db import create_db
+from kafka import KafkaConsumer
 from logger import LOG_CONFIG
 from model import MovieModel
 
@@ -50,10 +42,11 @@ def load_data_to_db(client: Client, values: list):
 
 def main(kafka_consumer: KafkaConsumer, ch_client: Client):
     while True:
-        msg_poll = kafka_consumer.poll(timeout_ms=CONSUME_TIMEOUT).values()
-        for records in msg_poll:
+        msg_poll = kafka_consumer.poll(timeout_ms=CONSUME_TIMEOUT, update_offsets=False)
+        for topic_partition, records in msg_poll.items():
             transformed_records = [record for record in transform_records(records)]
             load_data_to_db(ch_client, transformed_records)
+            kafka_consumer.seek(topic_partition, records[-1].offset + 1)
             kafka_consumer.commit()
 
 

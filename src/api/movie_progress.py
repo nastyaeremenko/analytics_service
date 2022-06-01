@@ -4,10 +4,10 @@ from http import HTTPStatus
 from fastapi import APIRouter, Depends
 from kafka import KafkaProducer
 
-from src.api.serializers import MovieProgress
-from src.core.config import KAFKA_TOPIC
-from src.data.kafka import get_kafka_producer
-from src.domain.grpc_auth.dependencies import get_user_id
+from api.serializers import MovieProgress
+from core.config import KAFKA_TOPIC
+from data.kafka import get_kafka_producer
+from domain.grpc_auth.dependencies import get_user_id
 
 router = APIRouter()
 

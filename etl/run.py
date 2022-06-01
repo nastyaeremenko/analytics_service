@@ -1,6 +1,7 @@
 import json
 import logging
 from dataclasses import asdict
+from datetime import datetime
 from logging import config
 
 from clickhouse_driver import Client
@@ -33,15 +34,18 @@ def connect_to_db():
 def transform_records(records: list):
     for record in records:
         user_uuid, movie_uuid = record.key.decode().split('+')
+        event_time = record.value.pop('event_time')
+        event_time = datetime.fromisoformat(event_time)
         movie_model = MovieModel(
-            user_uuid=user_uuid, movie_uuid=movie_uuid, **record.value
+            user_uuid=user_uuid, movie_uuid=movie_uuid,
+            event_time=event_time, **record.value
         )
         yield asdict(movie_model)
 
 
 @backoff(logging=logging)
 def load_data_to_db(client: Client, values: list):
-    client.execute(f'INSERT INTO {CH_TABLE_NAME} VALUES', values)
+    client.execute(f'INSERT INTO analytics.{CH_TABLE_NAME} VALUES', values)
 
 
 def main(kafka_consumer: KafkaConsumer, ch_client: Client):

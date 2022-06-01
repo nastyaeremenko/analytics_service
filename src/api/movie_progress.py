@@ -20,7 +20,7 @@ async def post_movie_progress(payload: MovieProgress,
     kafka_producer.send(topic=KAFKA_TOPIC,
                         value={'movie_progress': payload.movie_progress,
                                'movie_length': payload.movie_length,
-                               'event_time': datetime.now()},
+                               'event_time': datetime.now().isoformat()},
                         key=f'{user_uuid}+{payload.movie_uuid}')
 
     return {'message': 'Uploaded successfully'}

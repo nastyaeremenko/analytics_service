@@ -29,8 +29,8 @@ jobs:
         pip install types-protobuf
     - name: Flake8
       run: |
-          flake8 ./src/ --exit-zero --format=html --htmldir=reports/src/wemake-python-styleguide/
-          flake8 ./etl/ --exit-zero --format=html --htmldir=reports/etl/wemake-python-styleguide/
+          flake8 ./src/ --exit-zero --ignore=WPS,D,B --format=html --htmldir=reports/src/wemake-python-styleguide/
+          flake8 ./etl/ --exit-zero --ignore=WPS,D,B --format=html --htmldir=reports/etl/wemake-python-styleguide/
     - name: Mypy
       run: |
           mypy --html-report reports/src/mypy/ src/* || true

@@ -64,6 +64,14 @@ services:
     depends_on:
       - zookeeper
 
+  my-mongodb:
+    image: mongo:latest
+    container_name: ugc-mongodb
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb:/data/db
+
   etl_analytics:
     build:
       context: .
@@ -88,3 +96,4 @@ volumes:
     driver: local
   kafka_data:
     driver: local
+  mongodb:

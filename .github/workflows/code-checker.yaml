@@ -1,4 +1,4 @@
-name: Проверка
+name: Проверка сервиса аналитики онлайн-кинотеатра
 on: [push]
 jobs:
   linter:
@@ -32,8 +32,8 @@ jobs:
           flake8 ./etl/ --exit-zero --format=html --htmldir=reports/etl/wemake-python-styleguide/
     - name: Mypy
       run: |
-          mypy --html-report reports/src/mypy/ src/* || true
-          mypy --html-report reports/etl/mypy/ etl/* || true
+          mypy --ignore_missing_imports --html-report reports/src/mypy/ src/* || true
+          mypy --ignore_missing_imports --html-report reports/etl/mypy/ etl/* || true
     - name: Загрузка отчетов
       uses: actions/upload-artifact@v2
       with:

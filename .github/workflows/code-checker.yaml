@@ -26,7 +26,7 @@ jobs:
         pip install flake8-html
         pip install mypy
         pip install lxml
-        install types-protobuf
+        pip install types-protobuf
     - name: Flake8
       run: |
           flake8 ./src/ --exit-zero --select=E9,F63,F7,F82 --format=html --htmldir=reports/src/wemake-python-styleguide/

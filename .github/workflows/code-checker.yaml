@@ -17,7 +17,8 @@ jobs:
     - name: Установка зависимостей
       run: |
         python -m pip install --upgrade pip
-        pip install wemake-python-styleguide==0.16.1
+      #pip install wemake-python-styleguide==0.16.1
+        pip install flake8==3.9.0
         pip install mypy
     - name: Flake8
       run: flake8 .

@@ -9,8 +9,8 @@ class MongoDb:
     def __init__(self, mongo_client: AsyncIOMotorClient, collection: str):
         self.collection = mongo_client[MONGO_DB][collection]
 
-    async def get(self):
-        pass
+    async def get_all(self, id_: str) -> list:
+        return await self.collection.find({"_id": id_}).to_list(length=None)
 
     async def get_with_aggregation(self, pipeline: list) -> list:
         return await self.collection.aggregate(pipeline).to_list(length=None)

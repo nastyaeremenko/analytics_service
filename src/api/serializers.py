@@ -46,3 +46,7 @@ class ReviewRating(BaseOrjsonModel):
 
 class ReviewRatings(BaseOrjsonModel):
     __root__: list[ReviewRating]
+
+
+class Bookmark(BaseOrjsonModel):
+    movie_uuid: UUID

@@ -1,16 +1,13 @@
-import uuid
 from datetime import datetime
 from http import HTTPStatus
 
 from fastapi import APIRouter, Depends
 from kafka import KafkaProducer
 
-from api.query_params import SortingParams
-from api.serializers import MovieProgress, ReviewRatings
+from api.serializers import MovieProgress
 from core.config import KAFKA_TOPIC
 from db.kafka import get_kafka_producer
 from domain.grpc_auth.dependencies import get_user_id
-from domain.movie_services.review import ReviewService, get_review_service
 
 router = APIRouter()
 
@@ -26,11 +23,3 @@ async def post_movie_progress(payload: MovieProgress,
                         key=f'{user_uuid}+{payload.movie_uuid}')
 
     return {'message': 'Uploaded successfully'}
-
-
-@router.get('', response_model=ReviewRatings)
-async def get_movie_progress(movie_uuid: uuid.UUID,
-                             sorting: SortingParams = Depends(),
-                             review_service: ReviewService = Depends(get_review_service)):
-    reviews = await review_service.get_review_rating(str(movie_uuid), sorting.__dict__)
-    return reviews

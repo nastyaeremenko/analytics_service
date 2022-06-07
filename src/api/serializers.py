@@ -1,3 +1,4 @@
+import datetime
 from uuid import UUID
 
 import orjson
@@ -25,3 +26,23 @@ class MovieRating(BaseOrjsonModel):
     like: int
     dislike: int
     rating: float
+
+
+class LikesModel(BaseOrjsonModel):
+    like: int
+    dislike: int
+
+
+class ReviewRating(BaseOrjsonModel):
+    movie_uuid: UUID
+    user_uuid: UUID
+    text: str
+    first_name: str
+    last_name: str
+    date: datetime.date
+    rating: int
+    ratings: list[LikesModel]
+
+
+class ReviewRatings(BaseOrjsonModel):
+    __root__: list[ReviewRating]

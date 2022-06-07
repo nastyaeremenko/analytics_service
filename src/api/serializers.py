@@ -18,3 +18,10 @@ class MovieProgress(BaseOrjsonModel):
     movie_uuid: UUID
     movie_progress: int
     movie_length: int
+
+
+class MovieRating(BaseOrjsonModel):
+    movie_uuid: UUID
+    like: int
+    dislike: int
+    rating: float

@@ -31,7 +31,7 @@ httptools==0.4.0
 identify==2.5.1
 idna==3.3
 ipykernel==6.13.0
-ipython==8.4.0
+ipython
 ipython-genutils==0.2.0
 ipywidgets==7.7.0
 isort==5.10.1

@@ -17,6 +17,7 @@ def backoff(
     Формула:
         t = start_sleep_time * 2^(n) if t < border_sleep_time
         t = border_sleep_time if t >= border_sleep_time
+
     :param start_sleep_time: начальное время повтора
     :param factor: во сколько раз нужно увеличить время ожидания
     :param border_sleep_time: граничное время ожидания
@@ -32,7 +33,7 @@ def backoff(
                     return func(*args, **kwargs)
                 except Exception as e:
                     logging.error(
-                        'При выполнение функции {} ,произошла ошибка {}'.format(
+                        'При выполнение функции {0} ,произошла ошибка {1}'.format(
                             func.__name__, e))
                     if sleep_time >= border_sleep_time:
                         sleep_time = border_sleep_time

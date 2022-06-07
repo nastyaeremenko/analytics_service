@@ -1,6 +1,6 @@
 from clickhouse_driver import Client
 
-from constants import CH_TABLE_NAME
+from .constants import CH_TABLE_NAME
 
 
 def create_db():
@@ -11,9 +11,9 @@ def create_db():
 
 
 def init_node(client: Client, shard1: str, shard2: str):
-    client.execute("CREATE DATABASE IF NOT EXISTS analytics;")
-    client.execute("CREATE DATABASE IF NOT EXISTS shard;")
-    client.execute("CREATE DATABASE IF NOT EXISTS replica;")
+    client.execute('CREATE DATABASE IF NOT EXISTS analytics;')
+    client.execute('CREATE DATABASE IF NOT EXISTS shard;')
+    client.execute('CREATE DATABASE IF NOT EXISTS replica;')
     path1 = f'/clickhouse/tables/{shard1}/{CH_TABLE_NAME}'
     client.execute(f"""
         CREATE TABLE IF NOT EXISTS shard.{CH_TABLE_NAME} (
@@ -26,7 +26,7 @@ def init_node(client: Client, shard1: str, shard2: str):
         PARTITION BY toYYYYMMDD(event_time)
         ORDER BY movie_uuid;
         """, {'table': 'shard.movie_view',
-              'path': path1}
+              'path': path1},
     )
     path2 = f'/clickhouse/tables/{shard2}/{CH_TABLE_NAME}'
     client.execute(f"""
@@ -40,7 +40,7 @@ def init_node(client: Client, shard1: str, shard2: str):
         PARTITION BY toYYYYMMDD(event_time)
         ORDER BY movie_uuid;
         """, {'table': 'replica.movie_view',
-              'path': path2}
+              'path': path2},
     )
     client.execute(f"""
         CREATE TABLE IF NOT EXISTS analytics.{CH_TABLE_NAME} (
@@ -51,7 +51,7 @@ def init_node(client: Client, shard1: str, shard2: str):
             event_time DateTime
         ) ENGINE = Distributed('company_cluster', '', {CH_TABLE_NAME}, rand());
         """, {'table_full': 'analytics.movie_view',
-              'table': 'movie_view'}
+              'table': 'movie_view'},
     )
 
 

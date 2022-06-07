@@ -33,6 +33,15 @@
   --partitions 1 \
   --topic movie_progress`
 
+### Mongodb
+#### После создания контейнера нужно создать базу данных и коллекции
+1) `docker exec -it ugc-mongodb bash`
+2) `mongosh`
+3) `use ugc`
+4) `db.createCollection("review")`
+5) `db.createCollection("rating")`
+6) `db.createCollection("bookmark")`
+
 ### Линтер
 
 Конфигурация для flake8 находится в `setup.cfg`

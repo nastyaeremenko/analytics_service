@@ -64,6 +64,14 @@ services:
     depends_on:
       - zookeeper
 
+  my-mongodb:
+    image: mongo:latest
+    container_name: ugc-mongodb
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb:/data/db
+
   web:
     build: .
     container_name: ugc-api
@@ -111,3 +119,4 @@ volumes:
     driver: local
   kafka_data:
     driver: local
+  mongodb:

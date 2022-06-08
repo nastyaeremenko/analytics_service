@@ -1,15 +1,17 @@
-import json
+# import json
 import logging
 
 import uvicorn
 from fastapi import FastAPI
 from fastapi.responses import ORJSONResponse
-from kafka import KafkaProducer
+# from kafka import KafkaProducer
+from motor.motor_asyncio import AsyncIOMotorClient
 
 from api import movie_progress
 from core import config
 from core.logger import LOGGING
-from data import kafka
+# from db import kafka, mongodb
+from db import mongodb
 from domain.grpc_auth import client
 from domain.grpc_auth.protos import auth_pb2_grpc
 
@@ -23,10 +25,11 @@ app = FastAPI(
 
 @app.on_event('startup')
 async def startup():
-    kafka.producer = KafkaProducer(bootstrap_servers=f'{config.KAFKA_HOST}:{config.KAFKA_PORT}',
-                                   value_serializer=lambda v: json.dumps(v).encode('utf-8'),
-                                   key_serializer=str.encode)
+    # kafka.producer = KafkaProducer(bootstrap_servers=f'{config.KAFKA_HOST}:{config.KAFKA_PORT}',
+    #                                value_serializer=lambda v: json.dumps(v).encode('utf-8'),
+    #                                key_serializer=str.encode)
     client.stub = auth_pb2_grpc.AuthStub(client.channel)
+    mongodb.mongo = AsyncIOMotorClient(host=config.MONGO_HOST, port=config.MONGO_PORT)
 
 
 @app.on_event('shutdown')

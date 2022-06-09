@@ -7,7 +7,7 @@ from fastapi.responses import ORJSONResponse
 # from kafka import KafkaProducer
 from motor.motor_asyncio import AsyncIOMotorClient
 
-from api import movie_progress
+from api import movie_progress, rating, bookmarks, review
 from core import config
 from core.logger import LOGGING
 # from db import kafka, mongodb
@@ -40,12 +40,21 @@ async def shutdown():
 app.include_router(movie_progress.router,
                    prefix='/api/v1/movie/progress',
                    tags=['movie_progress'])
+app.include_router(rating.router,
+                   prefix='/api/v1/rating',
+                   tags=['rating'])
+app.include_router(bookmarks.router,
+                   prefix='/api/v1/bookmarks',
+                   tags=['bookmarks'])
+app.include_router(review.router,
+                   prefix='/api/v1/review',
+                   tags=['review'])
 
 
 if __name__ == '__main__':
     uvicorn.run(
         'main:app',
-        host='0.0.0.0',
+        host='localhost',
         port=8000,
         log_config=LOGGING,
         log_level=logging.DEBUG,

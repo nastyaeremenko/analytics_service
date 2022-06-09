@@ -15,7 +15,7 @@ class BookmarkService(BaseService):
         return parse_obj_as(list[Bookmark], result)
 
 
-def get_review_service(
+def get_bookmarks_service(
     mongo: AsyncIOMotorClient = Depends(get_mongo_client)
 ) -> BookmarkService:
     mongodb = MongoDb(mongo, MongoCollections.bookmarks)

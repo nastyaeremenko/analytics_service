@@ -48,5 +48,31 @@ class ReviewRatings(BaseOrjsonModel):
     __root__: list[ReviewRating]
 
 
-class Bookmark(BaseOrjsonModel):
+class BaseRateWithUserUUID(BaseOrjsonModel):
+    def dict_with_user_uuid(self, user_uuid: UUID, *args, **kwargs):
+        data = self.dict(*args, **kwargs)
+        data['user_uuid'] = user_uuid
+        return data
+
+
+class Bookmark(BaseRateWithUserUUID):
     movie_uuid: UUID
+
+
+class RateMovie(BaseRateWithUserUUID):
+    movie_uuid: UUID
+    rating: int
+
+
+class Review(BaseRateWithUserUUID):
+    movie_uuid: UUID
+    text: str
+    first_name: str
+    last_name: str
+    date: datetime.date
+    rating: int
+
+
+class Sort(BaseOrjsonModel):
+    sort_field: str
+    sort_order: bool

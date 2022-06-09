@@ -6,6 +6,7 @@ def movie_rating_pipeline(movie_id: str) -> list:
         {
             "$project": {
                 "movie_uuid": 1,
+                "id": 1,
                 "rating": 1,
                 "equal0": {
                     "$cond": [{"$eq": ["$rating", 0]}, 1, 0]
@@ -19,6 +20,7 @@ def movie_rating_pipeline(movie_id: str) -> list:
             "$group": {
                 "_id": "$movie_uuid",
                 "movie_uuid": {"$first": "$movie_uuid"},
+                "id": {"$first": "$_id"},
                 "like": {"$sum": "$equal10"},
                 "dislike": {"$sum": "$equal0"},
                 "rating": {"$avg": "$rating"}

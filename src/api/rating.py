@@ -1,6 +1,6 @@
 from http import HTTPStatus
 
-from fastapi import APIRouter, Depends, Query
+from fastapi import APIRouter, Depends
 from fastapi.responses import JSONResponse
 
 from api.serializers import MovieRating, RateMovie, RateMovieOut
@@ -20,8 +20,8 @@ async def rate_the_movie(payload: RateMovie,
     return movie_rating
 
 
-@router.get('/movie', status_code=HTTPStatus.OK, response_model=MovieRating)
-async def get_movie_rating(movie_id: str = Query(..., description='UUID фильма'),
+@router.get('/movie/{movie_id}', status_code=HTTPStatus.OK, response_model=MovieRating)
+async def get_movie_rating(movie_id: str,
                            service: MovieRatingService = Depends(get_movie_rating_service)):
     movie_rating = await service.get_movie_rating(movie_id)
     if movie_rating:
@@ -30,9 +30,9 @@ async def get_movie_rating(movie_id: str = Query(..., description='UUID филь
     return JSONResponse(content={}, status_code=HTTPStatus.NOT_FOUND)
 
 
-@router.put('/movie', status_code=HTTPStatus.OK, response_model=RateMovieOut)
+@router.put('/movie/{rating_id}', status_code=HTTPStatus.OK, response_model=RateMovieOut)
 async def update_movie_rating(payload: RateMovie,
-                              rating_id: str = Query(..., description='UUID Отзыва'),
+                              rating_id: str,
                               user_uuid=Depends(get_user_id),
                               service: MovieRatingService = Depends(get_movie_rating_service)):
     movie_rating = await service.get_document_by_id(rating_id)
@@ -47,8 +47,8 @@ async def update_movie_rating(payload: RateMovie,
                         status_code=HTTPStatus.FORBIDDEN)
 
 
-@router.delete('/movie', status_code=HTTPStatus.ACCEPTED)
-async def delete_movie_rating(rating_id: str = Query(..., description='UUID Отзыва'),
+@router.delete('/movie/{rating_id}', status_code=HTTPStatus.ACCEPTED)
+async def delete_movie_rating(rating_id: str,
                               user_uuid=Depends(get_user_id),
                               service: MovieRatingService = Depends(get_movie_rating_service)):
     movie_rating = await service.get_document_by_id(rating_id)

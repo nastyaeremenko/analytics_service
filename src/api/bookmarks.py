@@ -1,6 +1,6 @@
 from http import HTTPStatus
 
-from fastapi import APIRouter, Depends, Query
+from fastapi import APIRouter, Depends
 from fastapi.responses import JSONResponse
 
 from api.serializers import Bookmark, BookmarkOut
@@ -26,8 +26,8 @@ async def get_bookmarks(user_uuid=Depends(get_user_id),
     return bookmarks
 
 
-@router.delete('', status_code=HTTPStatus.ACCEPTED)
-async def delete_bookmark(bookmark_id: str = Query(..., description='UUID закладки'),
+@router.delete('/{bookmark_id}', status_code=HTTPStatus.ACCEPTED)
+async def delete_bookmark(bookmark_id: str,
                           user_uuid=Depends(get_user_id),
                           service: BookmarkService = Depends(get_bookmarks_service)):
     bookmark = await service.get_document_by_id(bookmark_id)

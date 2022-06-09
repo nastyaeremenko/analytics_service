@@ -1,6 +1,6 @@
 from http import HTTPStatus
 
-from fastapi import APIRouter, Depends, Query
+from fastapi import APIRouter, Depends
 from fastapi.responses import JSONResponse
 
 from api.query_params import SortingParams
@@ -20,9 +20,9 @@ async def add_review(payload: Review,
     return review
 
 
-@router.get('', status_code=HTTPStatus.OK, response_model=ReviewRatings)
-async def get_review(sort: SortingParams = Depends(),
-                     movie_id: str = Query(..., description='UUID фильма'),
+@router.get('/{movie_id}', status_code=HTTPStatus.OK, response_model=ReviewRatings)
+async def get_review(movie_id: str,
+                     sort: SortingParams = Depends(),
                      service: ReviewService = Depends(get_review_service)):
     reviews = await service.get_review_rating(movie_id, sort.__dict__)
     if reviews.__root__:
@@ -31,9 +31,9 @@ async def get_review(sort: SortingParams = Depends(),
     return JSONResponse(content=[], status_code=HTTPStatus.NOT_FOUND)
 
 
-@router.put('', status_code=HTTPStatus.OK, response_model=ReviewOut)
+@router.put('/{review_id}', status_code=HTTPStatus.OK, response_model=ReviewOut)
 async def update_review(payload: Review,
-                        review_id: str = Query(..., description='UUID Отзыва'),
+                        review_id: str,
                         user_uuid=Depends(get_user_id),
                         service: ReviewService = Depends(get_review_service)):
     review = await service.get_document_by_id(review_id)
@@ -48,8 +48,8 @@ async def update_review(payload: Review,
                         status_code=HTTPStatus.FORBIDDEN)
 
 
-@router.delete('', status_code=HTTPStatus.ACCEPTED)
-async def delete_review(review_id: str = Query(..., description='UUID Отзыва'),
+@router.delete('/{review_id}', status_code=HTTPStatus.ACCEPTED)
+async def delete_review(review_id: str,
                         user_uuid=Depends(get_user_id),
                         service: ReviewService = Depends(get_review_service)):
     review = await service.get_document_by_id(review_id)

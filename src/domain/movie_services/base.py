@@ -13,3 +13,6 @@ class BaseService:
 
     async def update_document(self, id_: str, data: dict):
         return await self.db.update(id_, data)
+
+    async def get_document(self, id_: str):
+        return await self.db.get_all(id_)[0]

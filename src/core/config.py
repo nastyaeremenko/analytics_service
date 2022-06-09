@@ -17,3 +17,7 @@ KAFKA_TOPIC = 'movie_progress'
 
 GRPC_HOST = os.getenv('GRPC_HOST', 'localhost')
 GRPC_PORT = os.getenv('GRPC_PORT', 50051)
+
+MONGO_HOST = os.getenv('MONGO_HOST', 'localhost')
+MONGO_PORT = os.getenv('MONGO_PORT', 27017)
+MONGO_DB = os.getenv('MONGO_DB', 'ugc')

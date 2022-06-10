@@ -3,7 +3,8 @@ from http import HTTPStatus
 from fastapi import APIRouter, Depends
 from fastapi.responses import JSONResponse
 
-from api.serializers import MovieRating, RateMovie, RateMovieOut
+from api.serializers import (MovieRating, RateMovie, RateMovieOut, RateReview,
+                             RateReviewOut)
 from domain.grpc_auth.dependencies import get_user_id
 from domain.movie_services.movie_rating import (MovieRatingService,
                                                 get_movie_rating_service)
@@ -59,3 +60,12 @@ async def delete_movie_rating(rating_id: str,
 
     return JSONResponse(content={'message': HTTPStatus.FORBIDDEN.description},
                         status_code=HTTPStatus.FORBIDDEN)
+
+
+@router.post('/review', status_code=HTTPStatus.CREATED, response_model=RateReviewOut)
+async def rate_review(payload: RateReview,
+                      user_uuid=Depends(get_user_id),
+                      service: MovieRatingService = Depends(get_movie_rating_service)):
+    response = await service.add_document(payload.dict_with_user_uuid(user_uuid))
+    review_rating = await service.get_document_by_id(response.inserted_id)
+    return review_rating

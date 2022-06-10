@@ -110,3 +110,13 @@ class Review(BaseRateWithUserUUID):
 
 class ReviewOut(Review):
     id: PyObjectId = Field(..., alias='_id')
+
+
+class RateReview(BaseRateWithUserUUID):
+    review_id: PyObjectId
+    rating: int
+
+
+class RateReviewOut(RateReview):
+    user_uuid: UUID
+    id: PyObjectId = Field(..., alias='_id')

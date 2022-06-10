@@ -1,6 +1,7 @@
 import json
 import logging
 
+import grpc
 import uvicorn
 from fastapi import FastAPI
 from fastapi.responses import ORJSONResponse
@@ -27,6 +28,7 @@ async def startup():
     kafka.producer = KafkaProducer(bootstrap_servers=f'{config.KAFKA_HOST}:{config.KAFKA_PORT}',
                                    value_serializer=lambda v: json.dumps(v).encode('utf-8'),
                                    key_serializer=str.encode)
+    client.channel = grpc.aio.insecure_channel(f'{config.GRPC_HOST}:{config.GRPC_PORT}')
     client.stub = auth_pb2_grpc.AuthStub(client.channel)
     mongodb.mongo = AsyncIOMotorClient(host=config.MONGO_HOST, port=config.MONGO_PORT)
 

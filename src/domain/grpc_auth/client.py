@@ -1,11 +1,8 @@
 from typing import Optional
 
-import grpc
-
-from core import config
 from domain.grpc_auth.protos import auth_pb2_grpc
 
-channel = grpc.aio.insecure_channel(f'{config.GRPC_HOST}:{config.GRPC_PORT}')
+channel = None
 
 stub: Optional[auth_pb2_grpc.AuthStub] = None
 

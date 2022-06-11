@@ -4,7 +4,7 @@ import logstash
 
 import grpc
 import uvicorn
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.responses import ORJSONResponse
 from kafka import KafkaProducer
 from motor.motor_asyncio import AsyncIOMotorClient
@@ -39,6 +39,24 @@ async def shutdown():
     await client.channel.close()
     mongodb.mongo.close()
 
+
+class RequestIdFilter(logging.Filter):
+    def filter(self, record):
+        record.request_id = Request.headers.get('X-Request-Id')
+        return True
+
+
+class RequestIdFilter(logging.Filter):
+    def filter(self, record):
+        record.request_id = Request.headers.get('X-Request-Id')
+        return True
+
+
+logstash_handler = logstash.LogstashHandler('logstash', 5044, version=1)
+app.logger = logging.getLogger(__name__)
+app.logger.setLevel(logging.INFO)
+app.logger.addFilter(RequestIdFilter())
+app.logger.addHandler(logstash_handler)
 
 app.include_router(movie_progress.router,
                    prefix='/api/v1/movie/progress',

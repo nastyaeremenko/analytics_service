@@ -1,5 +1,6 @@
 import json
 import logging
+import logstash
 
 import uvicorn
 from fastapi import FastAPI
@@ -23,9 +24,9 @@ app = FastAPI(
 
 @app.on_event('startup')
 async def startup():
-    kafka.producer = KafkaProducer(bootstrap_servers=f'{config.KAFKA_HOST}:{config.KAFKA_PORT}',
-                                   value_serializer=lambda v: json.dumps(v).encode('utf-8'),
-                                   key_serializer=str.encode)
+    # kafka.producer = KafkaProducer(bootstrap_servers=f'{config.KAFKA_HOST}:{config.KAFKA_PORT}',
+    #                                value_serializer=lambda v: json.dumps(v).encode('utf-8'),
+    #                                key_serializer=str.encode)
     client.stub = auth_pb2_grpc.AuthStub(client.channel)
 
 

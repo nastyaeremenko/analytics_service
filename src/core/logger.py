@@ -34,6 +34,15 @@ LOGGING = {
             'class': 'logging.StreamHandler',
             'stream': 'ext://sys.stdout',
         },
+        'logstash': {
+            'level': 'INFO',
+            'class': 'logstash.TCPLogstashHandler',
+            'host': 'logstash',
+            'port': 5044,
+            'version': 1,
+            'message_type': 'api',
+            'fqdn': False
+        },
     },
     'loggers': {
         '': {

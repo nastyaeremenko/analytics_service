@@ -109,3 +109,5 @@ wcwidth==0.2.5
 webencodings==0.5.1
 websockets==10.3
 widgetsnbextension==3.6.0
+clickhouse-driver==0.2.3
+python-logstash==0.4.8

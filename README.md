@@ -12,6 +12,7 @@
 - Kafka-python 2.0.2
 - Clickhouse-driver 0.2.3
 - Zookeeper 3.5
+- MongoDB
 
 ## Запуск проекта
 ### Подготовка к запуску
@@ -50,9 +51,13 @@
 
 Запуск isort: `isort .`
 
-## Тестирование
+### ELK
+Для того, чтобы получить токен для Kibana:
 
-Запуск: `pytest .`
+- Зайдите в контейнер elasticsearch:
+`docker exec -it logs-elasticsearch bash`
+- Введите команду: 
+`bin/elasticsearch-create-enrollment-token --scope kibana`
 
 ## CI-CD
 

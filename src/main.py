@@ -1,8 +1,9 @@
 import json
 import logging
-import logstash
 
 import grpc
+import logstash
+import sentry_sdk
 import uvicorn
 from fastapi import FastAPI, Request
 from fastapi.responses import ORJSONResponse
@@ -15,6 +16,8 @@ from core.logger import LOGGING
 from db import kafka, mongodb
 from domain.grpc_auth import client
 from domain.grpc_auth.protos import auth_pb2_grpc
+
+sentry_sdk.init()
 
 app = FastAPI(
     title=config.PROJECT_NAME,

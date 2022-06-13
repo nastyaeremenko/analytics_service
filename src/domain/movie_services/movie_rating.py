@@ -1,3 +1,5 @@
+from typing import Union
+
 from fastapi import Depends
 from motor.motor_asyncio import AsyncIOMotorClient
 
@@ -10,10 +12,12 @@ from domain.movie_services.pipelines import movie_rating_pipeline
 
 class MovieRatingService(BaseService):
 
-    async def get_movie_rating(self, movie_id: str) -> MovieRating:
+    async def get_movie_rating(self, movie_id: str) -> Union[MovieRating, list]:
         aggr_pipeline = movie_rating_pipeline(movie_id)
         result = await self.db.get_with_aggregation(aggr_pipeline)
-        return MovieRating.parse_obj(result[0])
+        if result:
+            return MovieRating.parse_obj(result[0])
+        return result
 
 
 def get_movie_rating_service(

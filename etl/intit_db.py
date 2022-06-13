@@ -1,6 +1,6 @@
 from clickhouse_driver import Client
 
-from .constants import CH_TABLE_NAME
+from constants import CH_TABLE_NAME
 
 
 def create_db():
